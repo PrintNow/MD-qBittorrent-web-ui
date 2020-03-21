@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>种子任务详细信息</title>
+    <link rel="stylesheet" href="./lib/layui/css/layui.css">
+    <link rel="stylesheet" href="./css/mdui-0.4.3/css/mdui.min.css">
+    <link rel="stylesheet" href="./css/main.css"/>
+    <link rel="stylesheet" href="./css/country.css"/>
+</head>
+<body class="mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-pink mdui-bottom-nav-fixed">
+
+<header class="mdui-appbar mdui-appbar-fixed">
+    <div class="mdui-toolbar mdui-color-theme">
+        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
+              onclick="window.history.back(-1)"
+              mdui-drawer="{target: '#main-drawer', swipe: true}">
+            <i class="mdui-icon material-icons">arrow_back</i>
+        </span>
+        <span class="mdui-typo-subheading" id="_title">...</span>
+        <div class="mdui-toolbar-spacer"></div>
+        <span id="taskState" class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white mdui-hidden"
+              mdui-tooltip="{content: '有操作正在进行中，在所有操作完成前关闭此页面，可能会取消你刚刚进行的操作'}">
+            <div class="mdui-spinner mdui-spinner-colorful"></div>
+        </span>
+    </div>
+</header>
+
+
+<!--Tab 栏目-->
+<div id="tab-info" class="mdui-tab mdui-color-theme" mdui-tab>
+    <a href="#tab-normal" class="mdui-ripple">普通</a>
+    <a href="#tab-tracker" class="mdui-ripple">Tracker</a>
+    <a href="#tab-user" class="mdui-ripple">用户</a>
+    <a href="#tab-httpSource" class="mdui-ripple" style="text-transform: unset;">HTTP 源</a>
+    <a href="#tab-content" class="mdui-ripple">内容</a>
+</div>
+
+
+<!--进度指示器，暂时无用途-->
+<div class="mdui-progress mdui-hidden" style="margin: 2px 0">
+    <div class="mdui-progress-indeterminate"></div>
+</div>
+
+<div class="mdui-container-fluid" id="tab-contents">
+    <div id="tab-normal" data-tab-contents="true">
+        <div class="speed-info mdui-row">
+            <div class="dl-info mdui-col-xs-6">
+                <div class="total_downloaded">{{getFileSize(info.total_downloaded)[0]}}<span class="file-byte">{{getFileSize(info.total_downloaded)[1]}}</span>
+                </div>
+                <div class="total_downloaded_session">OF {{getFileSize(info.total_downloaded_session).join('')}}</div>
+                <div class="dl_speed">{{getFileSize(info.dl_speed).join(' ')}}/s ↓</div>
+                <div class="peers_total">{{info.seeds || 0}} / {{info.seeds_total || 0}} 种子</div>
+                <!--他人向你传输 OF 做种数量-->
+            </div>
+            <div class="up-info mdui-col-xs-6">
+                <div class="total_downloaded">
+                    {{getFileSize(info.total_uploaded)[0]}}<span class="file-byte">{{getFileSize(info.total_uploaded)[1]}}</span>
+                </div>
+                <div class="total_downloaded_session">OF {{getFileSize(info.total_upload_session).join('')}}</div>
+                <div class="dl_speed">{{getFileSize(info.up_speed).join(' ')}}/s ↑</div>
+                <div class="peers_total">{{info.peers || 0}} / {{info.peers_total || 0}} 用户</div>
+                <!--你向他人传输 OF 用户数量-->
+            </div>
+        </div>
+
+        <div class="taskState">
+            <span class="split-2">总大小：{{getFileSize(info.total_size).join(' ')}}</span>
+            <span class="split-2">区块：{{info.pieces_num}} x {{getFileSize(info.piece_size).join(' ')}}</span>
+            <span class="split-2">状态：下载中</span>
+            <span class="split-2">上传限制：{{info.up_limit === -1 ? '∞' : getFileSize(info.up_limit)+"/s"}}</span>
+            <span class="split-2">分享率：{{toFixedd(info.share_ratio)}}</span>
+            <span class="split-2">下载限制：{{info.dl_limit === -1 ? '∞' : getFileSize(info.dl_limit)+"/s"}}</span>
+            <span class="split-2">添加于：{{formatTime(info.addition_date)}}</span>
+            <span class="split-2">活动时间：{{lastActiveTime(info.time_elapsed)}}</span>
+            <span class="split-2">完成于：{{formatTime(info.completion_date)}}</span>
+            <span class="split-2">重新发布于：{{toHourMinute(info.reannounce)}}</span>
+        </div>
+        <div class="mdui-p-t-1"></div>
+        <div class="taskState">
+            <span>保存路径：<a class="copy-filed">{{info.save_path}}</a></span>
+            <span>Torrent 哈希值：<a class="copy-filed">{{hash}}</a></span>
+            <span>注释：<a class="copy-filed">{{info.comment}}</a></span>
+        </div>
+
+    </div>
+
+    <div id="tab-user" data-tab-contents="true">
+        <div class="tableToolbar">
+            <a class="layui-btn layui-btn-xs" lay-event="detail" onclick="layui.table.reload('userTable')">手动刷新</a>
+        </div>
+        <table id="userTable" lay-filter="userTable"></table>
+    </div>
+
+    <div id="tab-tracker" data-tab-contents="true">
+        <div class="mdui-panel band-transition" mdui-panel v-for="(tk, name) in tracker">
+            <div class="mdui-panel-item">
+                <div class="mdui-panel-item-header">
+                    <div class="mdui-panel-item-title">URL：{{tk.url || '** [DHT] **'}}</div>
+                    <div class="mdui-panel-item-summary" style="font-size: 13px;">状态：{{trackerStatusCN(tk['status'])}}</div>
+                    <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-panel-item-body">
+                    <div class="mdui-row">
+                        <div class="mdui-col-xs-6">用户：{{num_na(tk.num_peers)}}</div>
+                        <div class="mdui-col-xs-6">下载：{{num_na(tk.num_downloaded)}}</div>
+                        <div class="mdui-col-xs-6">种子：{{num_na(tk.num_seeds)}}</div>
+                        <div class="mdui-col-xs-6">吸血者：{{num_na(tk.num_leeches)}}</div>
+                        <div class="mdui-col-xs-12">消息：{{tk.msg||'success'}}</div>
+                    </div>
+
+                    <div class="mdui-panel-item-actions mdui-hidden">
+                        <button class="mdui-btn mdui-ripple" mdui-panel-item-close>cancel</button>
+                        <button class="mdui-btn mdui-ripple">save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-httpSource" data-tab-contents="true">
+        <h3>开发中</h3>
+    </div>
+
+    <div id="tab-content" data-tab-contents="true">
+        <div v-for="(file, name) in content" class="mdui-list">
+            <label class="mdui-list-item mdui-ripple">
+                <!--                这是复选框-->
+                <div class="mdui-checkbox" @click="filePrio(name, $event)">
+                    <input type="checkbox" :checked="file.priority"/>
+                    <i class="mdui-checkbox-icon"></i>
+                </div>
+                <!--                这是内容-->
+                <div class="mdui-list-item-content">
+                    <p><b>[{{toPercent(file.progress)}}]</b> {{file.name}}</p>
+                    <div class="mdui-col-xs-4">大小：{{getFileSize(file.size).join(' ')}}</div>
+                    <div class="mdui-col-xs-4">剩余：{{getFileSize(file.size*(1-file.progress)).join(' ')}}</div>
+                    <div class="mdui-col-xs-4">可用性：{{file.availability === -1 ? '0.0%' : file.availability}}</div>
+                </div>
+            </label>
+        </div>
+    </div>
+</div>
+
+<script src="./lib/layui/layui.js"></script>
+<script src="./css/mdui-0.4.3/js/mdui.min.js"></script>
+<script>var $$ = mdui.JQ;</script>
+<script src="./lib/vue/vue.min.js"></script>
+<script src="./js/extent.js"></script>
+<script src="./js/constant.js"></script>
+<script src="./js/info.js"></script>
+</body>
+</html>

@@ -1,0 +1,433 @@
+/*!
+ * 自定义 css，注释可能没那么清楚
+ * MD-qBittorrent-web-ui v0.1.0
+ * Copyright 2020 chuwen<wenzhouchan@gmail.com>
+ * Licensed under GNU General Public License v3.0
+ */
+
+/*
+Tab 选项卡子元素居中
+例如 全部 (1) 下载 (0)
+*/
+.tab-ripple-num {
+    display: contents;
+}
+
+/*下载进度框*/
+.download-progress-box {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+/*下载进度列表*/
+.progress-box-list {
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/*将下列三个包裹起来*/
+.progress-box-list .file-content {
+    line-height: 34px;
+}
+
+/*下载状态*/
+.progress-box-list .download-state {
+}
+
+/*文件(夹)名*/
+.progress-box-list .file-name {
+    /*超出显示省略号*/
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/*文件(名)类型*/
+.progress-box-list .file-type {
+}
+
+/*进度条高度*/
+.progress-box-list .mdui-progress {
+    /*height: 22px;*/
+    height: 18px;
+}
+
+/*进度条那一行*/
+.progress-box-list .mdui-progress .progress-content {
+    /*font-size: 12px;*/
+    /*line-height: 23px;*/
+    font-size: 11.4px;
+    line-height: 18px;
+}
+
+/*文件大小*/
+.progress-box-list .mdui-progress .file-size {
+}
+
+/*已经进行的时间*/
+.progress-box-list .mdui-progress .download-time > .duration {
+
+}
+
+/*剩余时间*/
+.progress-box-list .mdui-progress .download-time > .time-left {
+}
+
+/*扩展：上传速度、最后活动、添加于*/
+.progress-box-list .download-extend {
+    font-size: 1.9vh;
+    font-weight: 300;
+    height: 100%;
+    margin-left: 8px;
+}
+
+.progress-box-list .download-extend .mdui-col-xs-3 {
+    width: 29%;
+}
+
+.progress-box-list .download-extend .mdui-col-xs-5 {
+    width: 32.3%;
+}
+
+.progress-box-list .download-extend .mdui-col-xs-4 {
+    width: 35%;
+}
+
+
+/*扩展*/
+.mdui-col-xs-0-4 {
+    float: left;
+    width: 4%;
+}
+
+.mdui-menu-item-icon {
+    padding-right: 0;
+}
+
+.mdui-menu-cascade > .mdui-menu-item > a {
+    padding: 0;
+}
+
+.mdui-menu-cascade {
+    /*width: 18vw;*/
+    width: 182px;
+    /*padding-left: 6px;*/
+    padding: 8px 0;
+}
+
+#mdui-ripple {
+    padding-left: 44px;
+}
+
+/*右上角进度指示器*/
+#taskState > .mdui-spinner.mdui-spinner-colorful {
+    top: 10px;
+}
+
+
+.slider-input-box {
+    display: flex;
+    padding-top: 16px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.slider-input-box input {
+    width: 80px;
+    padding: 3px 8px;
+    text-align: center;
+}
+
+.setting-diy-label {
+    line-height: 36px;
+}
+
+
+/*****/
+.formRow {
+    padding: 8px;
+}
+
+/*.formRow label{*/
+/*    padding-left: 8px;*/
+/*}*/
+.settings {
+    margin: 8px;
+}
+
+#port_value {
+    width: 3.8em;
+    padding-left: 4px;
+}
+
+#settings input,
+#settings label {
+    vertical-align: middle;
+}
+
+#settings input {
+    width: 4.3em;
+}
+
+#addTaskDialogMenu {
+    top: 52px !important;
+}
+
+#addTaskDialogMenu .mdui-ripple {
+    font-size: 14px;
+    padding: 0 4px;
+}
+
+/*上传文件框架*/
+.file-drop-zone {
+    border: 1px dashed #aaa;
+    border-radius: 4px;
+    /*height: 100%;*/
+    text-align: center;
+    vertical-align: middle;
+    margin: 12px 15px 12px 12px;
+    padding: 5px;
+}
+
+.file-drop-zone-title {
+    color: #aaa;
+    font-size: 1.4rem;
+    padding: 16px 8px;
+    cursor: default;
+    height: 6.3rem;
+}
+
+.file-drop-zone-title.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.file-drop-zone-delete {
+    position: absolute;
+    right: 48px;
+    cursor: pointer;
+    /*不选中文字*/
+    moz-user-select: -moz-none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+.file-drop-zone-delete:focus,
+.file-drop-zone-delete:hover {
+    color: mediumvioletred;
+}
+
+#clearTextfield {
+    text-decoration: unset;
+    cursor: pointer;
+}
+
+
+/*全局底部面板*/
+.footer-panel p {
+    margin: 0;
+}
+
+.footer-panel-item {
+    font-size: 0.8rem;
+}
+
+.footer-panel-item .mdui-icon.material-icons {
+    font-size: 1.2rem;
+}
+
+
+/****************
+种子详细信息
+****************/
+.speed-info {
+    padding: 8px 0;
+    line-height: 26px;
+    /*display: flex;*/
+    /*justify-content: space-between;*/
+}
+
+/*文件大小*/
+.speed-info .total_downloaded {
+    font-size: 2.2rem;
+}
+
+/*文件大小单位*/
+.speed-info .file-byte {
+    font-size: 1.3rem;
+    color: rgba(0, 0, 0, .54) !important;
+    padding-left: 2px;
+}
+
+/*本次活动传输的流量*/
+.speed-info .total_downloaded_session {
+    color: rgba(0, 0, 0, .54) !important;
+}
+
+/*实时传输速度*/
+.speed-info .dl_speed {
+    font-size: 1.4rem;
+    color: rgba(0, 0, 0, .8) !important;
+}
+
+.speed-info .peers_total {
+    color: rgba(0, 0, 0, .54) !important;
+}
+
+.speed-info .dl-info {
+    border-right: 3px solid #009688;
+    text-align: right;
+}
+
+/*种子状态*/
+.taskState {
+    clear: left;
+    border-left: 5px solid #009688;
+    padding: 0 8px;
+    margin-top: 6px;
+    margin-left: 4px;
+}
+
+.taskState span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3rem;
+    font-size: .8rem;
+}
+
+/*复制字段*/
+.taskState .copy-filed {
+    color: #E91E63;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.taskState .split-2 {
+    display: inline-block;
+    width: 49.5%;
+}
+
+
+/**********************
+Tracker 服务器列表   开始
+**********************/
+
+.band-transition * {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+}
+
+.ban-select {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+
+/*URL*/
+#tab-tracker .mdui-panel-item-title {
+    width: 60%;
+    min-width: 60%;
+    padding-right: 8px;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+/*状态*/
+#tab-tracker .mdui-panel-item-summary {
+    padding-right: 0;
+}
+
+/*各项信息显示*/
+#tab-tracker .mdui-panel-item-body .mdui-row > p {
+    clear: both;
+    margin: 0;
+    padding: 0 8px;
+}
+
+#tab-tracker .mdui-panel-item-body .mdui-row > div, p {
+    /*color: #555;*/
+    /*line-height: 22px;*/
+}
+
+/*操作*/
+#tab-tracker .mdui-panel-item-body .mdui-row > .mdui-col-xs-12:first-child {
+    padding: 4px 8px;
+}
+
+/*操作项目*/
+#tab-tracker .mdui-panel-item-body .mdui-row .operate {
+    color: #E91E63;
+}
+
+#tab-tracker .mdui-panel-item-body .mdui-row .operate:after {
+    content: "/";
+    padding: 0 4px;
+    color: #555;
+}
+
+#tab-tracker .mdui-panel-item-body .mdui-row .operate:last-child:after {
+    content: "";
+}
+
+/**********************
+Tracker 服务器列表   结束
+**********************/
+
+
+.icon {
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: -0.25em;
+    fill: currentColor;
+    overflow: hidden;
+}
+
+#filterItem a.mdui-ripple {
+    padding: 0 12px;
+}
+
+
+#tab-contents.mdui-container-fluid{
+    padding: 0;
+}
+
+/**********************
+种子 内容信息   开始
+**********************/
+#tab-content .mdui-list {
+    padding: 0;
+}
+
+#tab-content .mdui-list-item-content {
+    margin-left: 0;
+    padding: 8px 0;
+}
+
+#tab-content .mdui-list-item-content .mdui-col-xs-4 {
+    padding: 0;
+    font-size: 14px;
+    color: #5555559a;
+}
+
+#tab-content .mdui-list-item-content p {
+    margin: 0;
+    word-wrap:break-word;
+    word-break:break-all;
+}
+
+/**********************
+种子 内容信息   开始
+**********************/

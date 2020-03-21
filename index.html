@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:v-clipboard="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>首页</title>
+    <link rel="stylesheet" href="./css/mdui-0.4.3/css/mdui.min.css">
+    <link rel="stylesheet" href="./css/main.css"/>
+</head>
+<body class="mdui-drawer-body-left mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-pink mdui-bottom-nav-fixed">
+
+<header class="mdui-appbar mdui-appbar-fixed">
+    <div class="mdui-toolbar mdui-color-theme">
+        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
+              mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
+        <!--        <a href="https://www.mdui.org" class="mdui-typo-headline mdui-hidden-xs">MDUI</a>-->
+        <a href="./index.html" class="mdui-typo-title">首页</a>
+        <div class="mdui-toolbar-spacer"></div>
+
+        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
+              mdui-menu="{target: '#addTaskDialogMenu'}">
+            <i class="mdui-icon material-icons">add</i>
+        </span>
+        <!--        添加任务，链接/种子-->
+        <ul class="mdui-menu" id="addTaskDialogMenu">
+            <li class="mdui-menu-item">
+                <a class="mdui-ripple"
+                   onclick="addTaskDialog.addType=false"
+                   mdui-dialog="{target: '#addTaskDialog', history: false, modal: true}">
+                    <i class="mdui-menu-item-icon mdui-icon material-icons">link</i>添加 Torrent 链接
+                </a>
+            </li>
+            <li class="mdui-menu-item">
+                <a class="mdui-ripple"
+                   onclick="addTaskDialog.addType=true"
+                   mdui-dialog="{target: '#addTaskDialog', history: false, modal: true}">
+                    <i class="mdui-menu-item-icon mdui-icon material-icons">file_upload</i>添加 Torrent 文件
+                </a>
+            </li>
+        </ul>
+
+
+        <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
+              mdui-menu="{target: '#filterItem'}">
+            <i class="mdui-icon material-icons">sort</i>
+        </span>
+        <!--筛选下载项目-->
+        <ul class="mdui-menu" id="filterItem">
+            <li class="mdui-menu-item" @click="setOrderType(-1)">
+                <a class="mdui-ripple">
+                    默认排序
+                </a>
+            </li>
+            <li class="mdui-menu-item" @click="setOrderType(0)">
+                <a class="mdui-ripple">
+                    <svg class="icon" aria-hidden="true">
+                        <use :xlink:href="'#icon-'+sorts_" v-if="active === 0"></use>
+                    </svg>
+                    按下载速度排序
+                </a>
+            </li>
+            <li class="mdui-menu-item">
+                <a class="mdui-ripple" @click="setOrderType(1)">
+                    <svg class="icon" aria-hidden="true">
+                        <use :xlink:href="'#icon-'+sorts_" v-if="active === 1"></use>
+                    </svg>
+                    按上传速度排序
+                </a>
+            </li>
+            <li class="mdui-menu-item" @click="setOrderType(2)">
+                <a class="mdui-ripple">
+                    <svg class="icon" aria-hidden="true">
+                        <use :xlink:href="'#icon-'+sorts_" v-if="active === 2"></use>
+                    </svg>
+                    按大小排序
+                </a>
+            </li>
+            <li class="mdui-menu-item" @click="setOrderType(3)">
+                <a class="mdui-ripple">
+                    <svg class="icon" aria-hidden="true">
+                        <use :xlink:href="'#icon-'+sorts_" v-if="active === 3"></use>
+                    </svg>
+                    按名称排序
+                </a>
+            </li>
+            <li class="mdui-menu-item" @click="setOrderType(4)">
+                <a class="mdui-ripple">
+                    <svg class="icon" aria-hidden="true">
+                        <use :xlink:href="'#icon-'+sorts_" v-if="active === 4"></use>
+                    </svg>
+                    按状态排序
+                </a>
+            </li>
+            <li class="mdui-menu-item" @click="setOrderType(5)">
+                <a class="mdui-ripple">
+                    <svg class="icon" aria-hidden="true">
+                        <use :xlink:href="'#icon-'+sorts_" v-if="active === 5"></use>
+                    </svg>
+                    按上传比率排序
+                </a>
+            </li>
+            <li class="mdui-menu-item" @click="setOrderType(6)">
+                <a class="mdui-ripple">
+                    <svg class="icon" aria-hidden="true">
+                        <use :xlink:href="'#icon-'+sorts_" v-if="active === 6"></use>
+                    </svg>
+                    按最后活动时间排序
+                </a>
+            </li>
+        </ul>
+
+        <span id="taskState" class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white mdui-hidden"
+              mdui-tooltip="{content: '有操作正在进行中，在所有操作完成前关闭此页面，可能会取消你刚刚进行的操作'}">
+            <div class="mdui-spinner mdui-spinner-colorful"></div>
+        </span>
+    </div>
+</header>
+
+<div class="mdui-drawer" id="main-drawer">
+    <div class="mdui-list" mdui-collapse="{accordion: true}" style="margin-bottom: 76px;">
+        <div class="mdui-collapse-item mdui-collapse-item-open">
+            <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">near_me</i>
+                <div class="mdui-list-item-content">状态</div>
+                <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+            </div>
+            <div class="mdui-collapse-item-body mdui-list">
+                <a class="mdui-list-item mdui-ripple mdui-list-item-active">全部</a>
+            </div>
+        </div>
+    </div>
+
+    <a class="mdui-list-item mdui-ripple" href="./../index.html" target="_blank">
+        <i class="mdui-list-item-icon mdui-icon material-icons">layers</i>
+        <div class="mdui-list-item-content">返回使用旧版本</div>
+    </a>
+</div>
+
+
+<!--下载项目展示-->
+<div id="tab-all-filter" class="ban-select" data-tab-contents="true">
+    <ul id="download-tab" class="download-progress-box mdui-row">
+        <li class="progress-box-list mdui-ripple" v-for="(value, name) in filterMainData"
+            data-dl-item="true"
+            :data-uid="value['hash']" :data-state="value['state']" @click="goToInfo(value['hash'], value['name'])">
+            <div class="file-content">
+                <div class="download-state mdui-col-xs-2" style="width: 10.666667%">
+                    <i class="mdui-icon material-icons"
+                       v-bind:class="[selectDownloadStateColor(value['state'])]">{{selectDownloadStateIcon(value['state'])}}</i>
+                </div>
+                <div class="file-name mdui-col-xs-10 mdui-row-gapless">{{value['name']}}</div>
+            </div>
+
+            <div class="mdui-p-x-1">
+                <div class="mdui-progress">
+                    <div class="mdui-progress-determinate mdui-color-green-400"
+                         v-bind:style="{'width': value.progress*100+'%'}"></div>
+                    <div class="progress-content mdui-text-color-white">
+                        <div class="file-size mdui-col-xs-6">{{toPercent(value['progress'])}}
+                            ({{getFileSize(value['completed'])}}/{{getFileSize(value['total_size'])}})
+                        </div>
+                        <div class="download-speed mdui-col-xs-3">{{getFileSize(value['dlspeed'])}}/s</div>
+                        <div class="download-time mdui-col-xs-3">
+                            <span class="duration mdui-row-gapless">剩余: {{friendlyDuration(value['eta'])}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdui-p-t-1 mdui-row-gapless download-extend">
+                <div class="mdui-col-xs-3">
+                    <small>上传速度: <b>{{getFileSize(value['upspeed'])}}/s</b></small>
+                </div>
+                <div class="mdui-col-xs-5">
+                    <small>最后活动: {{lastActiveTime(value['last_activity'])}}</small>
+                </div>
+                <div class="mdui-col-xs-4">
+                    <small class="mdui-text-right">添加于: {{formatTime(value['added_on'])}}</small>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+
+
+<!--底部导航栏 - 服务统计-->
+<div id="serverState"
+     class="mdui-bottom-nav mdui-bottom-nav-scroll-hide mdui-color-brown mdui-text-color-white footer-panel mdui-row-gapless ban-select"
+     style="background-color: rgb(160, 160, 160)!important;">
+    <a class="mdui-ripple mdui-bottom-nav-active" @click.stop>
+        <i class="mdui-icon material-icons">storage</i>
+        <label>F: {{getFileSize(server_state.free_space_on_disk).join('')}}</label>
+    </a>
+    <a href="javascript:;" class="mdui-ripple mdui-bottom-nav-active" @click.stop>
+        <i class="mdui-icon material-icons">insert_chart</i>
+        <label>统计图表</label>
+    </a>
+    <div class="mdui-col-xs-3 footer-panel-item">
+        <div style="padding-top: 3px;" class="mdui-text-center">
+            <i class="mdui-icon material-icons">file_upload</i>
+        </div>
+        <p class="mdui-text-truncate mdui-text-center">{{getFileSize(server_state.up_info_speed).join('')}}/s</p>
+        <p class="mdui-text-truncate mdui-text-center">({{getFileSize(server_state.up_info_data).join('')}})</p>
+    </div>
+    <div class="mdui-col-xs-3 footer-panel-item">
+        <div style="padding-top: 3px;" class="mdui-text-center">
+            <i class="mdui-icon material-icons">file_download</i>
+        </div>
+        <p class="mdui-text-truncate mdui-text-center">{{getFileSize(server_state.dl_info_speed).join('')}}/s</p>
+        <p class="mdui-text-truncate mdui-text-center">({{getFileSize(server_state.dl_info_data).join('')}})</p>
+    </div>
+</div>
+
+
+<!--右击下载项目显示的菜单栏-->
+<ul class="mdui-menu mdui-menu-cascade" id="li-content-menu">
+    <li class="mdui-menu-item">
+        <a @click="pause_or_continue" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">{{(state === 'pausedUP') ? 'play_arrow' : (state ===
+                'pausedDL' ? 'play_arrow' : 'pause')}}</i>
+            {{(state === 'pausedUP') ? '继续' : (state === 'pausedDL' ? '继续' : '暂停')}}
+        </a>
+    </li>
+    <li class="mdui-menu-item">
+        <a @click="setForceStart" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">{{(state === 'forcedUP') ? 'play_arrow' :
+                'fast_forward'}}</i>
+            {{(state === 'forcedUP') ? '继续' : '强制继续'}}
+        </a>
+    </li>
+    <li class="mdui-divider"></li>
+    <li class="mdui-menu-item">
+        <a @click="deleteTorrent" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons mdui-text-color-red">delete</i>
+            删除
+        </a>
+    </li>
+    <li class="mdui-divider"></li>
+    <li class="mdui-menu-item">
+        <a @click="setLocation" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">folder_open</i>
+            更改保存位置
+        </a>
+    </li>
+    <li class="mdui-menu-item">
+        <a @click="setRename" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">edit</i>
+            重命名
+        </a>
+    </li>
+    <li class="mdui-menu-item mdui-hidden">
+        <a id="mdui-ripple" href="javascript:;" class="mdui-ripple">
+            分类
+            <span class="mdui-menu-item-more"></span>
+        </a>
+        <ul class="mdui-menu mdui-menu-cascade">
+            <li class="mdui-menu-item">
+                <a href="javascript:;" class="mdui-ripple">
+                    <i class="mdui-menu-item-icon mdui-icon material-icons">folder_open</i>开发中
+                </a>
+            </li>
+        </ul>
+    </li>
+    <li class="mdui-menu-item">
+        <a @click="setAutoManagement" class="mdui-ripple" :title="info.auto_tmm ? '已开启“自动Torrent管理”' : ''">
+            <i class="mdui-menu-item-icon mdui-icon material-icons"
+               :class="info.auto_tmm ? 'mdui-text-color-green' : ''">{{info.auto_tmm ? 'check' : ''}}</i>
+            自动Torrent管理
+        </a>
+    </li>
+    <li class="mdui-menu-item">
+        <a @click="setUploadLimit" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">file_upload</i>
+            限制上传速度
+        </a>
+    </li>
+    <li class="mdui-menu-item" :class="(state === 'pausedUP' || state === 'stalledUP') ? 'mdui-hidden' : ''">
+        <a @click="setDownloadLimit" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">play_for_work</i>
+            限制下载速度
+        </a>
+    </li>
+    <li class="mdui-menu-item">
+        <a @click="ShareRatio" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons"></i>
+            限制分享率
+        </a>
+    </li>
+    <li class="mdui-menu-item">
+        <a @click="setSuperSeeding" class="mdui-ripple" :title="info.super_seeding ? '已开启“自动Torrent管理”' : ''">
+            <i class="mdui-menu-item-icon mdui-icon material-icons"
+               :class="info.super_seeding ? 'mdui-text-color-green' : ''">{{info.super_seeding ? 'check' : ''}}</i>
+            超级做种模式
+        </a>
+    </li>
+    <li class="mdui-divider"></li>
+    <li class="mdui-menu-item">
+        <a @click="toggleSequentialDownload" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons"
+               :class="info.seq_dl ? 'mdui-text-color-green' : ''">{{info.seq_dl ? 'check' : ''}}</i>
+            以连续顺序下载
+        </a>
+    </li>
+    <li class="mdui-menu-item">
+        <a @click="toggleFirstLastPiecePrio" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons"></i>
+            先下载首尾段
+        </a>
+    </li>
+    <li class="mdui-menu-item">
+        <a @click="recheck" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">spellcheck</i>
+            强制再次核对
+        </a>
+    </li>
+    <li class="mdui-menu-item">
+        <a @click="reannounce" class="mdui-ripple">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">autorenew</i>
+            强制重新汇报
+        </a>
+    </li>
+    <li class="mdui-divider"></li>
+    <li class="mdui-menu-item">
+        <a class="mdui-ripple" v-clipboard:copy="info.name"
+           v-clipboard:success="onCopy" v-clipboard:error="onError">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">content_copy</i>
+            复制文件名
+        </a>
+    </li>
+    <li class="mdui-menu-item">
+        <a class="mdui-ripple" v-clipboard:copy="info.uid"
+           v-clipboard:success="onCopy" v-clipboard:error="onError">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">input</i>
+            复制种子哈希值
+        </a>
+    </li>
+    <li class="mdui-menu-item">
+        <a class="mdui-ripple" v-clipboard:copy="info.magnet_uri"
+           v-clipboard:success="onCopy" v-clipboard:error="onError">
+            <i class="mdui-menu-item-icon mdui-icon material-icons">link</i>
+            复制磁力链接
+        </a>
+    </li>
+</ul>
+
+
+<!--添加下载任务对话框-->
+<div class="mdui-dialog" id="addTaskDialog">
+    <div class="mdui-dialog-content">
+        <div class="mdui-dialog-title" v-if="addType">上传本地的 Torrent 文件</div>
+        <div class="mdui-dialog-title" v-else>从 URL 下载</div>
+
+        <div class="file-drop-zone" :class="{'mdui-hidden': !addType}">
+            <div v-if="fileName" class="file-drop-zone-delete" @click="deleteFile">
+                <i class="mdui-icon material-icons">delete</i>
+            </div>
+            <div v-if="fileName" class="file-drop-zone-title active" @dragover="fileDragover" @drop="fileDrop">{{
+                fileName }}
+            </div>
+            <div v-else class="file-drop-zone-title" @dragover="fileDragover" @drop="fileDrop">
+                将文件拖放到此处...<br>或者<br>
+                <a class="mdui-text-color-theme-accent" style="text-decoration: unset;"
+                   href="javascript:$$('#fileInput').trigger('click')">点击此处上传文件</a>
+            </div>
+
+            <input type="file" id="fileInput" name="fileInput" @change="chooseUploadFile" style="display: none;">
+        </div>
+
+        <div class="mdui-textfield" :class="{'mdui-hidden': addType}">
+
+            <label class="mdui-textfield-label">从 URL 或磁力链接下载 Torrents：</label>
+            <textarea class="mdui-textfield-input" rows="3" placeholder="每行输入一个链接" v-model="urls"></textarea>
+        </div>
+
+        <form>
+            <label class="mdui-radio" style="padding-left: 24px;margin-right: 16px;">
+                <input type="radio" name="_autoTMM" v-model="autoTMM" value="true"/>
+                <i class="mdui-radio-icon"></i>
+                自动管理 Torrent
+            </label>
+            <label class="mdui-radio" style="padding-left: 24px;">
+                <input type="radio" name="_autoTMM" v-model="autoTMM" value="false"/>
+                <i class="mdui-radio-icon"></i>
+                手动管理 Torrent
+            </label>
+        </form>
+
+        <div class="mdui-textfield" :class="{'mdui-textfield-disabled': autoTMM == 'true'}">
+            <label class="mdui-textfield-label">保存文件到：</label>
+            <input class="mdui-textfield-input" type="text" v-model="savepath" v-if="autoTMM === 'true'" disabled/>
+            <input class="mdui-textfield-input" type="text" v-model="savepath" v-else/>
+        </div>
+
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">分类：</label>
+            <input list="category" class="mdui-textfield-input" type="text" v-model="category"/>
+            <datalist id="category">
+                   
+                <option v-for="(value, name) in categories" :value="name">
+            </datalist>
+        </div>
+
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">Cookie：</label>
+            <input class="mdui-textfield-input" type="text" v-model="cookie"/>
+        </div>
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">重命名 torrent：</label>
+            <input class="mdui-textfield-input" type="text" v-model="rename"/>
+        </div>
+
+        <label class="mdui-checkbox" style="display: block;">
+            <input type="checkbox" v-model="pausedd"/>
+            <i class="mdui-checkbox-icon"></i>
+            立即开始 Torrent
+        </label>
+        <label class="mdui-checkbox" style="display: block;">
+            <input type="checkbox" v-model="skip_checking"/>
+            <i class="mdui-checkbox-icon"></i>
+            跳过哈希检查
+        </label>
+        <label class="mdui-checkbox" style="display: block;">
+            <input type="checkbox" v-model="root_folder"/>
+            <i class="mdui-checkbox-icon"></i>
+            创建子文件夹
+        </label>
+        <label class="mdui-checkbox" style="display: block;">
+            <input type="checkbox" v-model="sequentialDownload"/>
+            <i class="mdui-checkbox-icon"></i>
+            以连续顺序下载
+        </label>
+        <label class="mdui-checkbox" style="display: block;">
+            <input type="checkbox" v-model="firstLastPiecePrio"/>
+            <i class="mdui-checkbox-icon"></i>
+            先下载首尾段
+        </label>
+
+        <div class="mdui-textfield mdui-col-xs-6">
+            <label class="mdui-textfield-label">限制上传速率：</label>
+            <input class="mdui-textfield-input" type="number" placeholder="单位：KB/s" v-model="upLimit"/>
+        </div>
+        <div class="mdui-textfield mdui-col-xs-6">
+            <label class="mdui-textfield-label">限制下载速率：</label>
+            <input class="mdui-textfield-input" type="number" placeholder="单位：KB/s" v-model="dlLimit"/>
+        </div>
+    </div>
+    <div class="mdui-dialog-actions">
+        <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+        <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确认添加</button>
+    </div>
+</div>
+
+
+<script src="./css/mdui-0.4.3/js/mdui.min.js"></script>
+<script>var $$ = mdui.JQ;</script>
+<script src="./js/extent.js"></script>
+<script src="./lib/iconfont/iconfont.js"></script>
+<script src="./lib/vue/vue.min.js"></script>
+<script src="./js/vue-clipboard.min.js"></script>
+<script src="./js/constant.js"></script>
+<script src="./js/main.js"></script>
+</body>
+</html>
