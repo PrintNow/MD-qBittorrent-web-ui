@@ -239,7 +239,7 @@ layui.use(['table'], function () {
                 for (let item in peers) {
                     tmp_ = peers[item];
                     tmp_.user = item;
-                    tmp_.country = res.data[tmp_['ip']]['country']['code'];
+                    // tmp_.country = res.data[tmp_['ip']]['country']['code'];
 
                     ips.push(tmp_['ip']);
                     tmp.push(tmp_);
