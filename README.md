@@ -1,4 +1,6 @@
 # MD-qBittorrent-web-ui
+[![star](https://gitee.com/wenzhouchan/MD-qBittorrent-web-ui/badge/star.svg?theme=dark)](https://gitee.com/wenzhouchan/MD-qBittorrent-web-ui/stargazers)
+
 基于 MDUI 前端框架设计的手机专属 qBittorrent WEB UI（后续会做电脑版），涵盖了 70% 官方 WEB UI 能做到的功能
 
 # 截图
@@ -85,6 +87,7 @@ https://github.com/qbittorrent/qBittorrent/tree/master/src/icons to `<new folder
 > 在选项上启用 `WebUI\AlternativeUIEnabled`，并将条目 `WebUI\RootFolder` 指向 <new folder>，然后启动 `qBittorrent`。 
 > 然后访问 `http://<IP地址>:<端口号>/index.html`
 
+[![WenzhouChan/MD-qBittorrent-web-ui](https://gitee.com/wenzhouchan/MD-qBittorrent-web-ui/widgets/widget_card.svg?colors=4183c4,ffffff,ffffff,e3e9ed,666666,9b9b9b)](https://gitee.com/wenzhouchan/MD-qBittorrent-web-ui)
 
 # LICENSE
 [LICENSE](LICENSE)
